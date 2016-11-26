@@ -10,26 +10,72 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
  *
  * @author adiel
  */
-public class RayTracing {
+public class RayTracing2 {
 
+    public static int W = 400, H = 400;
+    public static Lienzo form = new Lienzo();
+    // viewer position
+    public static double px = (double) 0,
+            py = (double) 0,
+            pz = (double) -1000;
     /**
      * @param args the command line arguments
      */
     //   http://www.codeproject.com/Articles/19732/Simple-Ray-Tracing-in-C
+
+    public static BufferedImage bufferedImage = null;
+
     public static void main(String[] args) {
+        bufferedImage = generarImagen();
+        show();
+        while (true) {
+            bufferedImage = generarImagen();
+            form.repaint();
+            pz += 5 ;
+
+
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(RayTracing2.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+            System.out.println("raytracing.RayTracing2.main()");
+        }
+    }
+
+    private static void show() {
+
+        form.getDrawable().add(new Lienzo.IDrawableInformer() {
+            @Override
+            public void paint(Graphics g) {
+                g.drawImage(bufferedImage, 0, 0, form.getWidth(), form.getHeight(), form);
+            }
+        });
+        form.setSize(bufferedImage.getHeight(), bufferedImage.getWidth());
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+
+                form.setVisible(true);
+
+            }
+        });
+    }
+
+    private static BufferedImage generarImagen() {
         double time = System.currentTimeMillis();
 //        double[] f = {1,2,3};
 //        Sphere.VectorialProduct(new double[]{2,0,1}, new double[]{1,-1,3}, f);
 
-        double hhhh = Sphere.GetSphereIntersec(200, 200, 200, 100, 0, 0, 0, 1, 1, 1);
-
-        int W = 400, H = 400;
+        //double hhhh = Sphere.GetSphereIntersec(200, 200, 200, 100, 0, 0, 0, 1, 1, 1);
         double fMax = 400.0;
         BufferedImage bufferedImage = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         Graphics g = bufferedImage.getGraphics();
@@ -40,15 +86,11 @@ public class RayTracing {
         Rectangle rect = new Rectangle(0, 0, W, H);
 
         ArrayList<Sphere> obj3dArrayList = new ArrayList<>();
-        obj3dArrayList.add(new RayTracing.Sphere(0.0, 0.0, 90.0, 100.0, 0.0, 0.0, 255.0));
-        obj3dArrayList.add(new RayTracing.Sphere(-160.0, -120.0, -110.0, 15.0, 255.0, 0.0, 0.0));
-        obj3dArrayList.add(new RayTracing.Sphere(-140.0, -140.0, -150.0, 20.0, 255.0, 200.0, 0.0));
+        obj3dArrayList.add(new Sphere(0.0, 0.0, 90.0, 100.0, 0.0, 0.0, 255.0));
+        obj3dArrayList.add(new Sphere(-160.0, -120.0, -110.0, 15.0, 255.0, 0.0, 0.0));
+        obj3dArrayList.add(new Sphere(-140.0, -140.0, -150.0, 20.0, 255.0, 200.0, 0.0));
         Graphics graphics = g;
 
-        // viewer position
-        double px = (double) 0,
-                py = (double) 0,
-                pz = (double) -500;
         // light position
         double lpx = (double) 200,
                 lpy = (double) 200,
@@ -111,6 +153,8 @@ public class RayTracing {
                         spherehit = sphn;
                     }
                 }
+                
+                
                 Color color = new Color(10, 20, 10);
                 if (spherehit != null) {
                     double itx = px + t * vx, ity = py + t * vy, itz = pz
@@ -120,7 +164,7 @@ public class RayTracing {
                             spherehit.cy, spherehit.cz, spherehit.radius,
                             lpx, lpy, lpz, itx - lpx,
                             ity - lpy, itz - lpz);
- boolean DARSKIDE = RayTracing2.Sphere.GetSphereIntersecFar(spherehit.cx,
+                    boolean DARSKIDE = Sphere.GetSphereIntersecFar(spherehit.cx,
                                     spherehit.cy, spherehit.cz, spherehit.radius, itx,
                                     ity, itz, itx - lpx, ity - lpy, itz
                                     - lpz)> 0.0001;
@@ -136,6 +180,9 @@ public class RayTracing {
                                 bShadow = true;
                                 break;
                             }
+                        }
+                        else{
+                        
                         }
                     }
                     double cost = Sphere.GetCosAngleV1V2(lvx, lvy, lvz, itx
@@ -165,26 +212,8 @@ public class RayTracing {
         }// for pixels columns
 
         System.out.println(System.currentTimeMillis() - time);
-        show(bufferedImage);
-    }
+        return bufferedImage;
 
-    private static void show(BufferedImage bufferedImage) {
-        Lienzo form = new Lienzo();
-        form.getDrawable().add(new Lienzo.IDrawableInformer() {
-            @Override
-            public void paint(Graphics g) {
-                g.drawImage(bufferedImage, 0, 0, form.getWidth(), form.getHeight(), form);
-            }
-        });
-        form.setSize(bufferedImage.getHeight(), bufferedImage.getWidth());
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-                form.setVisible(true);
-
-            }
-        });
     }
 
     public static class Lienzo extends JFrame {
@@ -362,5 +391,4 @@ public class RayTracing {
         }
         public double cx, cy, cz, radius, clR, clG, clB;
     }
-
 }
