@@ -18,14 +18,15 @@ import javax.swing.JFrame;
  *
  * @author adiel
  */
-public class RayTracing2 {
+public class RayTracing4 {
 
     public static int W = 400, H = 400;
     public static Lienzo form = new Lienzo();
+    public static double[] COI = {0.0, 0.0, 90.0};
     // viewer position
     public static double px = (double) 0,
             py = (double) 0,
-            pz = (double) -1000;
+            pz = (double) 500;
     /**
      * @param args the command line arguments
      */
@@ -36,16 +37,21 @@ public class RayTracing2 {
     public static void main(String[] args) {
         bufferedImage = generarImagen();
         show();
+        double angle = Math.PI / 360;
         while (true) {
             bufferedImage = generarImagen();
             form.repaint();
-            pz += 5;
+            // pz -= 10 ;
 
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(RayTracing2.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            double x = px - COI[0], y = py - COI[1], z = pz - COI[2];
+
+            double xm = x * Math.cos(angle) - z * Math.sin(angle);
+            double zm = z * Math.cos(angle) + x * Math.sin(angle);
+
+            px = xm + COI[0];
+            py = y + COI[1];
+            pz = zm + COI[2];
+
             System.out.println("raytracing.RayTracing2.main()");
         }
     }
@@ -85,9 +91,9 @@ public class RayTracing2 {
         Rectangle rect = new Rectangle(0, 0, W, H);
 
         ArrayList<Sphere> obj3dArrayList = new ArrayList<>();
-        obj3dArrayList.add(new Sphere(0.0, 0.0, 90.0, 100.0, 0.0, 0.0, 255.0));
-        obj3dArrayList.add(new Sphere(-160.0, -120.0, -110.0, 15.0, 255.0, 0.0, 0.0));
-        obj3dArrayList.add(new Sphere(-140.0, -140.0, -150.0, 20.0, 255.0, 200.0, 0.0));
+        obj3dArrayList.add(new RayTracing4.Sphere(0.0, 0.0, 90.0, 100.0, 0.0, 0.0, 255.0));
+        obj3dArrayList.add(new RayTracing4.Sphere(-160.0, -120.0, -110.0, 15.0, 255.0, 0.0, 0.0));
+        obj3dArrayList.add(new RayTracing4.Sphere(-140.0, -140.0, -150.0, 20.0, 255.0, 200.0, 0.0));
         Graphics graphics = g;
 
         // light position
@@ -99,12 +105,12 @@ public class RayTracing2 {
                 lvy = (double) -1,
                 lvz = (double) -1;
 
-        double d = 300;
+        double d = 100;
 //        double[] viewdirection = new double[]{1, 1, 0};
 
         //double[] u = {1,0,0};
         double[] Vup = {-1, 1, 0};
-        double[] COI = {0.0, 0.0, 90.0};
+
         double[] N = {px - COI[0], py - COI[1], pz - COI[2]};
         double N_mod = Sphere.modv(N);
         double[] n = {N[0] / N_mod, N[1] / N_mod, N[2] / N_mod};
@@ -152,7 +158,6 @@ public class RayTracing2 {
                         spherehit = sphn;
                     }
                 }
-
                 Color color = new Color(10, 20, 10);
                 if (spherehit != null) {
                     double itx = px + t * vx, ity = py + t * vy, itz = pz
@@ -162,7 +167,7 @@ public class RayTracing2 {
                             spherehit.cy, spherehit.cz, spherehit.radius,
                             lpx, lpy, lpz, itx - lpx,
                             ity - lpy, itz - lpz);
-                    boolean DARSKIDE = Sphere.GetSphereIntersecFar(spherehit.cx,
+                    boolean DARSKIDE = RayTracing2.Sphere.GetSphereIntersecFar(spherehit.cx,
                             spherehit.cy, spherehit.cz, spherehit.radius, itx,
                             ity, itz, itx - lpx, ity - lpy, itz
                             - lpz) > 0.0001;
@@ -178,8 +183,6 @@ public class RayTracing2 {
                                     bShadow = true;
                                     break;
                                 }
-                            } else {
-
                             }
                         }
                     }
@@ -389,4 +392,5 @@ public class RayTracing2 {
         }
         public double cx, cy, cz, radius, clR, clG, clB;
     }
+
 }

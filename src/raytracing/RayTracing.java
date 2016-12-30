@@ -120,21 +120,22 @@ public class RayTracing {
                             spherehit.cy, spherehit.cz, spherehit.radius,
                             lpx, lpy, lpz, itx - lpx,
                             ity - lpy, itz - lpz);
- boolean DARSKIDE = RayTracing2.Sphere.GetSphereIntersecFar(spherehit.cx,
-                                    spherehit.cy, spherehit.cz, spherehit.radius, itx,
-                                    ity, itz, itx - lpx, ity - lpy, itz
-                                    - lpz)> 0.0001;
-                    if(DARSKIDE==false)
-                    for (int k = 0; k < (int) obj3dArrayList.size(); k++) {
-                        Sphere sphnb = (Sphere) (obj3dArrayList.get(k));
-                        if (sphnb != spherehit) {
-                            double tauxlb = Sphere.GetSphereIntersec(sphnb.cx,
-                                    sphnb.cy, sphnb.cz, sphnb.radius, lpx,
-                                    lpy, lpz, itx - lpx, ity - lpy, itz
-                                    - lpz);
-                            if (tauxlb > 0 && tauxla < tauxlb) {
-                                bShadow = true;
-                                break;
+                    boolean DARSKIDE = RayTracing2.Sphere.GetSphereIntersecFar(spherehit.cx,
+                            spherehit.cy, spherehit.cz, spherehit.radius, itx,
+                            ity, itz, itx - lpx, ity - lpy, itz
+                            - lpz) > 0.0001;
+                    if (DARSKIDE == false) {
+                        for (int k = 0; k < (int) obj3dArrayList.size(); k++) {
+                            Sphere sphnb = (Sphere) (obj3dArrayList.get(k));
+                            if (sphnb != spherehit) {
+                                double tauxlb = Sphere.GetSphereIntersec(sphnb.cx,
+                                        sphnb.cy, sphnb.cz, sphnb.radius, lpx,
+                                        lpy, lpz, itx - lpx, ity - lpy, itz
+                                        - lpz);
+                                if (tauxlb > 0 && tauxla < tauxlb) {
+                                    bShadow = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -314,7 +315,7 @@ public class RayTracing {
             }
             return t;
         }
-        
+
         public static double GetSphereIntersecFar(double cx, double cy, double cz,
                 double radius, double px, double py, double pz,
                 double vx, double vy, double vz) {
